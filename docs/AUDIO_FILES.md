@@ -7,11 +7,11 @@ that will be used in this project.
 
 ## Data format of .wav file.
 
-<img src="./assets/img/wav_file_structure">
+<img src="../assets/img/wav_file_structure.png">
 
 ## Structure of .wav file.
 
-<img src="./assets/img/example_wav_file_structure.png">
+<img src="../assets/img/example_wav_file_structure.png">
 
 ## Overview of the file structure.
 
