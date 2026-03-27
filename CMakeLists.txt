@@ -15,8 +15,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+# --- GTest setup ---
 set(GTEST_MSVC_RUNTIME_LIBRARY "static")
 find_package(GTest REQUIRED)
+
+if(GTest_FOUND)
+    include_directories(${GTEST_INCLUDE_DIRS})
+    link_libraries(${GTEST_LIBRARIES})
+endif()
 
 file(GLOB_RECURSE LIB_SOURCES "src/*.cpp")
 list(REMOVE_ITEM LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
@@ -28,3 +34,5 @@ enable_testing()
 file(GLOB_RECURSE TEST_SOURCES "tests/*.cpp")
 
 add_executable(tests ${TEST_SOURCES} ${LIB_SOURCES})
+
+target_link_libraries(tests PRIVATE ${GTEST_LIBRARIES} pthread)
