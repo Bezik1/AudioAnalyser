@@ -11,6 +11,9 @@ TEST_F(AudioUtilsTest, WavReadingTest)
 {
     auto data = audioUtils.readWav("test/test.wav");
 
-    EXPECT_GT(data.getNumSamples(), 0);
-    EXPECT_GT(data.sampleRate, 0);
+    ASSERT_EQ(data.chunkID.size(), 4);
+    ASSERT_EQ(data.chunkID, "RIFF");
+
+    ASSERT_EQ(data.format.size(), 4);
+    ASSERT_EQ(data.format, "WAVE");
 }
