@@ -1,19 +1,68 @@
 #include <gtest/gtest.h>
+
 #include "../../src/utils/AudioUtils/AudioUtils.hpp"
 
+/**
+ * @brief Tests for AudioUtils class.
+ * @test
+ */
 class AudioUtilsTest : public testing::Test
 {
 protected:
+    inline static const std::string TEST_PATH = "test/test.wav";
+    inline static const std::string INCORRECT_TEST_PATH = "non_existent_file";
+
     AudioUtils audioUtils;
 };
 
-TEST_F(AudioUtilsTest, WavReadingTest)
+/**
+ * @brief Test, whether program throws correct exception, if user
+ * passed incorrect path to audioUtils.
+ */
+TEST_F(AudioUtilsTest, FileNotFoundTest)
 {
-    auto data = audioUtils.readWav("test/test.wav");
+    EXPECT_THROW({ audioUtils.readWav(INCORRECT_TEST_PATH); }, std::runtime_error);
+}
+
+/**
+ * @brief Tests, if all fields in RIFF header are correctly stored.
+ *
+ */
+TEST_F(AudioUtilsTest, WavChunkDescriptorTest)
+{
+    auto data = audioUtils.readWav(TEST_PATH);
 
     ASSERT_EQ(data.chunkID.size(), 4);
     ASSERT_EQ(data.chunkID, "RIFF");
 
     ASSERT_EQ(data.format.size(), 4);
     ASSERT_EQ(data.format, "WAVE");
+
+    EXPECT_EQ(data.fmt.chunkID, "fmt ");
+    EXPECT_EQ(data.fmt.audioFormat, 1);
+
+    EXPECT_TRUE(data.fmt.numChannels == 1 || data.fmt.numChannels == 2);
+    EXPECT_TRUE(data.fmt.bitsPerSample == 8 || data.fmt.bitsPerSample == 16);
+    EXPECT_GT(data.fmt.sampleRate, 0);
+}
+
+/**
+ * @brief Tests the format of data stored inside AudioData in data sub chunk.
+ *
+ */
+TEST_F(AudioUtilsTest, WavDataFieldValidation)
+{
+    auto data = audioUtils.readWav(TEST_PATH);
+
+    EXPECT_EQ(data.data.chunkID, "data");
+    EXPECT_GT(data.data.chunkSize, 0);
+
+    int expectedSize = 8 * data.data.chunkSize / (data.fmt.numChannels * data.fmt.bitsPerSample);
+    EXPECT_EQ(data.data.samples.size(), expectedSize);
+    EXPECT_EQ(data.getNumSamples(), expectedSize);
+
+    for (float sample : data.data.samples)
+    {
+        ASSERT_TRUE(sample >= -1.0f && sample <= 1.0f);
+    }
 }
