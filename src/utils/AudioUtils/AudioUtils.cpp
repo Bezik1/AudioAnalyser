@@ -71,29 +71,26 @@ AudioUtils::AudioData AudioUtils::readWav(std::string_view filePath)
             data.data.samples.clear();
             data.data.samples.resize(numSamples);
 
-            for (int i = 0; i < numSamples; i++)
+            if (data.fmt.bitsPerSample == 16)
             {
-                if (data.fmt.bitsPerSample == 16)
+                for (int i = 0; i < numSamples; ++i)
                 {
-                    for (int i = 0; i < numSamples; ++i)
-                    {
-                        int16_t sample;
-                        file.read(reinterpret_cast<char *>(&sample), sizeof(int16_t));
-                        data.data.samples[i] = (sample / 32768.0f);
-                    }
+                    int16_t sample;
+                    file.read(reinterpret_cast<char *>(&sample), sizeof(int16_t));
+                    data.data.samples[i] = (sample / 32768.0f);
                 }
-                else if (data.fmt.bitsPerSample == 8)
-                {
-                    for (int i = 0; i < numSamples; ++i)
-                    {
-                        uint8_t sample;
-                        file.read(reinterpret_cast<char *>(&sample), sizeof(uint8_t));
-                        data.data.samples[i] = ((sample - 128.0f) / 128.0f);
-                    }
-                }
-                else
-                    throw std::runtime_error("Unsupported bits per sample value.");
             }
+            else if (data.fmt.bitsPerSample == 8)
+            {
+                for (int i = 0; i < numSamples; ++i)
+                {
+                    uint8_t sample;
+                    file.read(reinterpret_cast<char *>(&sample), sizeof(uint8_t));
+                    data.data.samples[i] = ((sample - 128.0f) / 128.0f);
+                }
+            }
+            else
+                throw std::runtime_error("Unsupported bits per sample value.");
         }
         else
         {
