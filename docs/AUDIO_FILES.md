@@ -1,19 +1,19 @@
-# Audio Files
+# 📁 Audio Files
 
-## :bulb: Description.
+## 💡 Overview
 
 This is the overview of specifications of the structure audio files
 that will be used in this project.
 
-## Data format of .wav file.
+## Data format of .wav file
 
 <img src="../assets/img/wav_file_structure.png">
 
-## Structure of .wav file.
+## Structure of .wav file
 
 <img src="../assets/img/example_wav_file_structure.png">
 
-## Overview of the file structure.
+## Overview of the file structure
 
 ```
 chunkId = RIFF
@@ -28,7 +28,7 @@ blockAlign = numChannels * bitsPerSample / 8
 bitsPerSample = 2 bytes
 ```
 
-## Sources
+## 🗒️ Sources
 
 - [Specification of .wav file format.](https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html)
 - [Warmer specification of .wav file format](http://soundfile.sapp.org/doc/WaveFormat/)
