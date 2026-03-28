@@ -1,0 +1,47 @@
+#!/bin/bash
+
+echo "Starting pre-commit checks..."
+
+if ! command -v cmake &> /dev/null || ! command -v ninja &> /dev/null; then
+    echo "Error: cmake or ninja not found."
+    exit 1
+fi
+
+echo "Configuring project..."
+cmake -S . -B build \
+    -G Ninja \
+    -DCMAKE_PREFIX_PATH=$(brew --prefix qt6) \
+    -DCMAKE_BUILD_TYPE=Release
+
+if [ $? -ne 0 ]; then
+    echo "Configuration failed. Retrying with a clean build directory..."
+    rm -rf build
+    cmake -S . -B build \
+        -G Ninja \
+        -DCMAKE_PREFIX_PATH=$(brew --prefix qt6) \
+        -DCMAKE_BUILD_TYPE=Release
+    
+    if [ $? -ne 0 ]; then
+        echo "Configuration failed again."
+        exit 1
+    fi
+fi
+
+echo "Building tests..."
+cmake --build build --target tests --parallel $(sysctl -n hw.ncpu)
+
+if [ $? -ne 0 ]; then
+    echo "Build failed."
+    exit 1
+fi
+
+echo "Running tests..."
+./build/tests
+
+if [ $? -ne 0 ]; then
+    echo "Tests failed."
+    exit 1
+fi
+
+echo "Pre-commit checks passed."
+exit 0
