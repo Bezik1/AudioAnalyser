@@ -1,0 +1,39 @@
+name: Project Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Cache Homebrew
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/Library/Caches/Homebrew
+          /usr/local/var/homebrew
+        key: ${{ runner.os }}-brew-${{ hashFiles('.github/workflows/tests.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-brew-
+
+    - name: Install dependencies
+      run: |
+        brew install cmake ninja googletest
+
+    - name: Configure project
+      run: |
+        cmake -S . -B build \
+          -G Ninja \
+          -DCMAKE_PREFIX_PATH=$(brew --prefix qt6) \
+          -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build tests
+      run: |
+        cmake --build build --target tests --parallel $(sysctl -n hw.ncpu)
+
+    - name: Run tests
+      run: |
+        ./build/tests
