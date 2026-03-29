@@ -1,6 +1,32 @@
-#include <iostream>
+#include <QApplication>
+#include "gui/MainView/MainView.hpp"
 
-int main()
+int main(int argc, char *argv[])
 {
-    std::println("Hello World");
+    static constexpr int DISPLAY_WIDTH = 1200;
+    static constexpr int DISPLAY_HEIGHT = 1000;
+    QApplication app(argc, argv);
+
+    QPalette darkPalette;
+    darkPalette.setColor(QPalette::Window, QColor(53, 53, 53));
+    darkPalette.setColor(QPalette::WindowText, Qt::white);
+    darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
+    darkPalette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
+    darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
+    darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+    darkPalette.setColor(QPalette::Text, Qt::white);
+    darkPalette.setColor(QPalette::Button, QColor(53, 53, 53));
+    darkPalette.setColor(QPalette::ButtonText, Qt::white);
+    darkPalette.setColor(QPalette::BrightText, Qt::red);
+    darkPalette.setColor(QPalette::Highlight, QColor(142, 45, 197));
+    darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+
+    app.setPalette(darkPalette);
+
+    std::string TEST_PATH = "test/test.wav";
+    MainView mainView(TEST_PATH);
+    mainView.show();
+    mainView.resize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
+    return app.exec();
 }

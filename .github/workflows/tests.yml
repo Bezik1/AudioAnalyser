@@ -21,7 +21,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        brew install cmake ninja googletest
+        brew install cmake ninja qt6 googletest
 
     - name: Configure project
       run: |
