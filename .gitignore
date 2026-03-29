@@ -7,6 +7,8 @@
 /build
 /build/*
 
+*.DS_Store
+
 main
 
 */main.dSYM
