@@ -23,13 +23,13 @@ SpectrumChartWidget::SpectrumChartWidget(const std::vector<AudioAnalyser::Freque
     {
         axisX->setLabelsColor(Qt::white);
         axisX->setTitleBrush(QBrush(Qt::white));
-        axisX->setTitleText("Hz");
+        axisX->setTitleText("Frequency (Hz)");
     }
     if (axisY)
     {
         axisY->setLabelsColor(Qt::white);
         axisY->setTitleBrush(QBrush(Qt::white));
-        axisX->setTitleText("Amplitude");
+        axisY->setTitleText("Amplitude");
     }
 
     auto *view = new QChartView(chart);

@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "gui/MainWidget/MainWidget.hpp"
+#include "gui/MainWindow/MainWindow.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -23,8 +23,7 @@ int main(int argc, char *argv[])
 
     app.setPalette(darkPalette);
 
-    std::string TEST_PATH = "eval/input_file.wav";
-    MainWidget mainView(TEST_PATH);
+    MainWindow mainView;
     mainView.show();
     mainView.resize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
