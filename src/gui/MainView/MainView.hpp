@@ -16,6 +16,6 @@ public:
 
 private:
     QChart *chart;
-    QHBoxLayout *layout;
+    QVBoxLayout *layout;
     QLineSeries *series;
 };

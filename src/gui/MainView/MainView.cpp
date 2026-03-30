@@ -1,5 +1,5 @@
 #include "MainView.hpp"
-#include "../../core/AudioAnalyser/AudioAnalysis.hpp"
+#include "../../core/AudioAnalyser/AudioAnalyser.hpp"
 #include <QtCharts>
 
 MainView::MainView(const std::string &wavPath, QWidget *parent)
@@ -7,7 +7,8 @@ MainView::MainView(const std::string &wavPath, QWidget *parent)
 {
     AudioUtils::AudioData audioData = AudioUtils::readWav(wavPath);
 
-    layout = new QHBoxLayout(this);
+    layout = new QVBoxLayout(this);
+    QHBoxLayout *topChartsLayout = new QHBoxLayout();
 
     int displayWidth = this->screen()->geometry().width();
     int displayHeight = this->screen()->geometry().height();
@@ -38,6 +39,7 @@ MainView::MainView(const std::string &wavPath, QWidget *parent)
     originalChart->axisX()->setRange(0, durationInSeconds);
     originalChart->axisY()->setRange(-1.0, 1.0);
 
+    originalChart->legend()->hide();
     originalChart->axisX()->setLabelsColor(Qt::white);
     originalChart->axisX()->setTitleText("Time (s)");
     originalChart->axisX()->setTitleBrush(QBrush(Qt::white));
@@ -47,11 +49,19 @@ MainView::MainView(const std::string &wavPath, QWidget *parent)
 
     auto *originalChartView = new QChartView(originalChart);
     originalChartView->setRenderHint(QPainter::Antialiasing);
-    layout->addWidget(originalChartView, 1);
+    topChartsLayout->addWidget(originalChartView, 1);
 
-    // audioData.data.samples.resize(audioData.getNumSamples() * 0.01);
     auto spectrum = AudioAnalyser::discreteFourierTransform(audioData.data.samples, audioData.fmt.sampleRate);
-    auto reconstructed = AudioAnalyser::reconstruct(spectrum, numSamples * 0.5, audioData.fmt.sampleRate);
+    auto reconstructed = AudioAnalyser::reconstruct(spectrum, numSamples, audioData.fmt.sampleRate);
+
+    AudioUtils::AudioData spectrumAudioData = AudioUtils::prepareSamplesToBeSaved(
+        reconstructed,
+        audioData.fmt.numChannels,
+        audioData.fmt.sampleRate,
+        audioData.fmt.bitsPerSample);
+
+    const std::string outputPath = "test/spectrum.wav";
+    AudioUtils::saveWav(spectrumAudioData, outputPath);
 
     auto *reconstructedChart = new QChart();
     reconstructedChart->setBackgroundBrush(QBrush(QColor(53, 53, 53)));
@@ -72,6 +82,7 @@ MainView::MainView(const std::string &wavPath, QWidget *parent)
     reconstructedChart->axisX()->setRange(0, durationInSeconds);
     reconstructedChart->axisY()->setRange(-1.0, 1.0);
 
+    reconstructedChart->legend()->hide();
     reconstructedChart->axisX()->setLabelsColor(Qt::white);
     reconstructedChart->axisX()->setTitleText("Time (s)");
     reconstructedChart->axisX()->setTitleBrush(QBrush(Qt::white));
@@ -81,5 +92,33 @@ MainView::MainView(const std::string &wavPath, QWidget *parent)
 
     auto *reconstructedChartView = new QChartView(reconstructedChart);
     reconstructedChartView->setRenderHint(QPainter::Antialiasing);
-    layout->addWidget(reconstructedChartView, 1);
+    topChartsLayout->addWidget(reconstructedChartView, 1);
+
+    auto *spectrumChart = new QChart();
+    spectrumChart->setBackgroundBrush(QBrush(QColor(53, 53, 53)));
+    auto *spectrumSeries = new QLineSeries();
+
+    int spectrumSize = 5512.5;
+    for (int i = 0; i < spectrumSize; i++)
+    {
+        spectrumSeries->append(spectrum[i].frequency, spectrum[i].amplitude);
+    }
+
+    spectrumChart->addSeries(spectrumSeries);
+    spectrumChart->createDefaultAxes();
+    spectrumChart->setTitle("Frequency Spectrum");
+    spectrumChart->setTitleBrush(QBrush(Qt::white));
+
+    spectrumChart->legend()->hide();
+    spectrumChart->axisX()->setLabelsColor(Qt::white);
+    spectrumChart->axisX()->setTitleText("Frequency (Hz)");
+    spectrumChart->axisX()->setTitleBrush(QBrush(Qt::white));
+    spectrumChart->axisY()->setLabelsColor(Qt::white);
+    spectrumChart->axisY()->setTitleText("Amplitude");
+    spectrumChart->axisY()->setTitleBrush(QBrush(Qt::white));
+
+    auto *spectrumChartView = new QChartView(spectrumChart);
+    spectrumChartView->setRenderHint(QPainter::Antialiasing);
+    layout->addLayout(topChartsLayout, 1);
+    layout->addWidget(spectrumChartView, 1);
 }

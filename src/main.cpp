@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
     app.setPalette(darkPalette);
 
-    std::string TEST_PATH = "test/test.wav";
+    std::string TEST_PATH = "test/input_test.wav";
     MainView mainView(TEST_PATH);
     mainView.show();
     mainView.resize(DISPLAY_WIDTH, DISPLAY_HEIGHT);

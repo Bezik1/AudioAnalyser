@@ -100,3 +100,86 @@ AudioUtils::AudioData AudioUtils::readWav(std::string_view filePath)
 
     return data;
 }
+
+AudioUtils::AudioData
+AudioUtils::prepareSamplesToBeSaved(const std::vector<float> &samples,
+                                    uint16_t numChannels,
+                                    uint32_t sampleRate,
+                                    uint16_t bitsPerSample)
+{
+    AudioData data;
+
+    data.chunkID = CHUNK_ID;
+    data.format = FORMAT;
+
+    data.fmt.chunkID = SUB_CHUNK_1_ID;
+    data.fmt.chunkSize = 16;
+    data.fmt.audioFormat = 1;
+    data.fmt.numChannels = numChannels;
+    data.fmt.sampleRate = sampleRate;
+    data.fmt.bitsPerSample = bitsPerSample;
+    data.fmt.byteRate = sampleRate * numChannels * bitsPerSample / 8;
+    data.fmt.blockAlign = numChannels * bitsPerSample / 8;
+
+    data.data.chunkID = SUB_CHUNK_2_ID;
+    data.data.samples = samples;
+    data.data.chunkSize = samples.size() * (bitsPerSample / 8);
+
+    data.chunkSize = 36 + data.data.chunkSize;
+
+    return data;
+}
+
+void AudioUtils::saveWav(const AudioUtils::AudioData &audioData, std::string_view filePath)
+{
+    std::filesystem::path fullPath = std::filesystem::path(DEFAULT_PATH) / filePath;
+    std::ofstream file(fullPath, std::ios::binary);
+
+    if (!file.is_open())
+        throw std::runtime_error("Couldn't open the file for writing: " + fullPath.string());
+
+    file.write(audioData.chunkID.data(), CHUNK_ID_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.chunkSize), CHUNK_SIZE_SIZE);
+    file.write(audioData.format.data(), FORMAT_SIZE);
+
+    file.write(audioData.fmt.chunkID.data(), CHUNK_ID_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.fmt.chunkSize), CHUNK_SIZE_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.fmt.audioFormat), AUDIO_FORMAT_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.fmt.numChannels), NUM_CHANNELS_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.fmt.sampleRate), SAMPLE_RATE_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.fmt.byteRate), BYTE_RATE_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.fmt.blockAlign), BLOCK_ALIGN_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.fmt.bitsPerSample), BITS_PER_SAMPLE_SIZE);
+
+    file.write(audioData.data.chunkID.data(), CHUNK_ID_SIZE);
+    file.write(reinterpret_cast<const char *>(&audioData.data.chunkSize), CHUNK_SIZE_SIZE);
+
+    if (audioData.fmt.bitsPerSample == 16)
+    {
+        for (int i = 0; i < audioData.data.samples.size(); i++)
+        {
+            float clamped = std::clamp(audioData.data.samples.at(i), -1.0f, 1.0f);
+            int16_t clampedSample = static_cast<int16_t>(clamped * 32767.0f);
+
+            file.write(reinterpret_cast<const char *>(&clampedSample), sizeof(int16_t));
+            if (!file)
+                throw std::runtime_error("Failed writing 16-bit sample to file: " + fullPath.string());
+        }
+    }
+    else if (audioData.fmt.bitsPerSample == 8)
+    {
+        for (int i = 0; i < audioData.data.samples.size(); i++)
+        {
+            float clamped = std::clamp(audioData.data.samples.at(i), -1.0f, 1.0f);
+            uint8_t clampedSample = static_cast<uint8_t>((clamped + 1.0f) * 127.5f);
+
+            file.write(reinterpret_cast<const char *>(&clampedSample), sizeof(uint8_t));
+            if (!file)
+                throw std::runtime_error("Failed writing 8-bit sample to file: " + fullPath.string());
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Unsupported bits per sample format.");
+    }
+}

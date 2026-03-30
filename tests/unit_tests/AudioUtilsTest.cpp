@@ -9,8 +9,11 @@
 class AudioUtilsTest : public testing::Test
 {
 protected:
-    inline static const std::string TEST_PATH = "test/test.wav";
-    inline static const std::string INCORRECT_TEST_PATH = "non_existent_file";
+    inline static const std::string TEST_INPUT_PATH = "test/input_test.wav";
+    inline static const std::string TEST_OUTPUT_PATH = "test/output_test.wav";
+    inline static const std::string INCORRECT_TEST_PATH = "/invalid_path/incorrect_test.wav";
+
+    static constexpr float FLOAT_PARSING_ERROR = 1.0f / 32767.0f;
 
     AudioUtils audioUtils;
 };
@@ -19,7 +22,7 @@ protected:
  * @brief Test, whether program throws correct exception, if user
  * passed incorrect path to audioUtils.
  */
-TEST_F(AudioUtilsTest, FileNotFoundTest)
+TEST_F(AudioUtilsTest, InputFileNotFoundTest)
 {
     EXPECT_THROW({ audioUtils.readWav(INCORRECT_TEST_PATH); }, std::runtime_error);
 }
@@ -30,7 +33,7 @@ TEST_F(AudioUtilsTest, FileNotFoundTest)
  */
 TEST_F(AudioUtilsTest, WavChunkDescriptorTest)
 {
-    auto data = audioUtils.readWav(TEST_PATH);
+    auto data = audioUtils.readWav(TEST_INPUT_PATH);
 
     ASSERT_EQ(data.chunkID.size(), 4);
     ASSERT_EQ(data.chunkID, "RIFF");
@@ -52,7 +55,7 @@ TEST_F(AudioUtilsTest, WavChunkDescriptorTest)
  */
 TEST_F(AudioUtilsTest, WavDataFieldValidation)
 {
-    auto data = audioUtils.readWav(TEST_PATH);
+    auto data = audioUtils.readWav(TEST_INPUT_PATH);
 
     EXPECT_EQ(data.data.chunkID, "data");
     EXPECT_GT(data.data.chunkSize, 0);
@@ -64,5 +67,50 @@ TEST_F(AudioUtilsTest, WavDataFieldValidation)
     for (float sample : data.data.samples)
     {
         ASSERT_TRUE(sample >= -1.0f && sample <= 1.0f);
+    }
+}
+
+/**
+ * @brief Test, whether program throws correct exception, if user
+ * passed incorrect path to audioUtils.
+ */
+TEST_F(AudioUtilsTest, IncorrectOutputFileTest)
+{
+    auto sampleData = audioUtils.readWav(TEST_INPUT_PATH);
+    EXPECT_THROW({ audioUtils.saveWav(sampleData, INCORRECT_TEST_PATH); }, std::runtime_error);
+}
+
+/**
+ * @brief Test, if data saved from data and dataAfterSave given by readWav after saving
+ * the first file are the same.
+ *
+ */
+TEST_F(AudioUtilsTest, WavDataSavingTest)
+{
+    auto data = audioUtils.readWav(TEST_INPUT_PATH);
+    audioUtils.saveWav(data, TEST_OUTPUT_PATH);
+
+    auto dataAfterSave = audioUtils.readWav(TEST_OUTPUT_PATH);
+
+    EXPECT_EQ(data.chunkID, dataAfterSave.chunkID);
+    EXPECT_EQ(data.chunkSize, dataAfterSave.chunkSize);
+    EXPECT_EQ(data.format, dataAfterSave.format);
+
+    EXPECT_EQ(data.fmt.chunkID, dataAfterSave.fmt.chunkID);
+    EXPECT_EQ(data.fmt.chunkSize, dataAfterSave.fmt.chunkSize);
+    EXPECT_EQ(data.fmt.audioFormat, dataAfterSave.fmt.audioFormat);
+    EXPECT_EQ(data.fmt.numChannels, dataAfterSave.fmt.numChannels);
+    EXPECT_EQ(data.fmt.sampleRate, dataAfterSave.fmt.sampleRate);
+    EXPECT_EQ(data.fmt.byteRate, dataAfterSave.fmt.byteRate);
+    EXPECT_EQ(data.fmt.blockAlign, dataAfterSave.fmt.blockAlign);
+    EXPECT_EQ(data.fmt.bitsPerSample, dataAfterSave.fmt.bitsPerSample);
+
+    EXPECT_EQ(data.data.chunkID, dataAfterSave.data.chunkID);
+    EXPECT_EQ(data.data.chunkSize, dataAfterSave.data.chunkSize);
+    ASSERT_EQ(data.data.samples.size(), dataAfterSave.data.samples.size());
+
+    for (int i = 0; i < data.data.samples.size(); ++i)
+    {
+        EXPECT_NEAR(data.data.samples[i], dataAfterSave.data.samples[i], FLOAT_PARSING_ERROR);
     }
 }

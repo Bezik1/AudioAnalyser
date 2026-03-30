@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <fstream>
 #include <stdexcept>
@@ -104,6 +105,8 @@ public:
      *
      * Class can throw various runtime errors, depending on whether some obligatory field is corrupted.
      *
+     * This method was created, according to .wav file specification described in ./docs/AUDIO_FILES.md.
+     *
      * Calculations for numSamples:
      * ```
      * subChunk2Size = numSamples * numChannels * bitsPerSample / 8
@@ -113,6 +116,31 @@ public:
      * @return AudioData
      */
     static AudioData readWav(std::string_view filePath);
+
+    /**
+     * @brief
+     *
+     * @param samples
+     * @param fmt
+     * @return AudioData
+     */
+    static AudioData prepareSamplesToBeSaved(const std::vector<float> &samples,
+                                          uint16_t numChannels,
+                                          uint32_t sampleRate,
+                                          uint16_t bitsPerSample);
+
+    /**
+     * @brief Saves the .wav file into given directory.
+     *
+     * @details This implementation sticks to RAII system. To do so it uses std::ofsteam class, which
+     * guarantee that file will close no further, than before last block of the sequence.
+     *
+     * This method was created, according to .wav file specification described in ./docs/AUDIO_FILES.md.
+     *
+     * @param audioData data to be saved in AudioData format.
+     * @param filePath path to the file in the default `./data` directory.
+     */
+    static void saveWav(const AudioUtils::AudioData &audioData, std::string_view filePath);
 
 private:
     inline static const std::string DEFAULT_PATH = "./data";
@@ -126,15 +154,10 @@ private:
     static constexpr int CHUNK_SIZE_SIZE = 4;
     static constexpr int FORMAT_SIZE = 4;
 
-    static constexpr int SUB_CHUNK1_ID_SIZE = 4;
-    static constexpr int SUB_CHUNK1_SIZE = 16;
     static constexpr int AUDIO_FORMAT_SIZE = 2;
     static constexpr int NUM_CHANNELS_SIZE = 2;
     static constexpr int SAMPLE_RATE_SIZE = 4;
     static constexpr int BYTE_RATE_SIZE = 4;
     static constexpr int BLOCK_ALIGN_SIZE = 2;
     static constexpr int BITS_PER_SAMPLE_SIZE = 2;
-
-    static constexpr int SUB_CHUNK2_ID_SIZE = 4;
-    static constexpr int SUB_CHUNK2_SIZE = 4;
 };

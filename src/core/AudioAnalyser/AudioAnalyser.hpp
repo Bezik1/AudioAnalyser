@@ -20,11 +20,18 @@ public:
     AudioAnalyser();
 
     /**
-     * @brief 
-     * 
-     * @param samples 
-     * @param sampleRate 
-     * @return std::vector<FrequencyData> 
+     * @brief
+     *
+     * @details
+     *
+     * Why numFrequencies = samples.size() / 2 + 1?
+     * The explanation is the fact that numFrequencies gives us number of necessary frequencies
+     * to capture the whole complex sound we need exactly num_sample_freq / 2 + 1. This fact comes
+     * from Nyquist-Shannon sampling theorem.
+     *
+     * @param samples
+     * @param sampleRate
+     * @return std::vector<FrequencyData>
      */
     static std::vector<FrequencyData>
     discreteFourierTransform(const std::vector<float> &samples, int sampleRate);
@@ -41,5 +48,4 @@ public:
     reconstruct(const std::vector<FrequencyData> &spectrum, int numSamples, int sampleRate);
 
 private:
-    // prywatne pola lub metody
 };
