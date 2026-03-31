@@ -13,9 +13,9 @@
 #include "../../core/AudioAnalyser/AudioAnalyser.hpp"
 #include "../../utils/AudioUtils/AudioUtils.hpp"
 
+#include "../widgets/OverviewWidget/OverviewWidget.hpp"
+#include "../widgets/FileManagmentWidget/FileManagmentWidget.hpp"
 #include "../widgets/FrequencyComponentsWidget/FrequencyComponentsWidget.hpp"
-
-class MainWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -28,6 +28,7 @@ public:
 private slots:
     void showFirstView();
     void showSecondView();
+    void showThirdView();
     void onAnalysisFinished();
 
 private:
@@ -38,10 +39,13 @@ private:
     QWidget *centralWidget;
     QVBoxLayout *mainLayout;
     QHBoxLayout *menuLayout;
-    QPushButton *btnView1;
-    QPushButton *btnView2;
 
-    MainWidget *mainWidget;
+    QPushButton *fileManagmentBtn;
+    QPushButton *overviewBtn;
+    QPushButton *componentsBtn;
+
+    OverviewWidget *overviewWidget;
+    FileManagmentWidget *fileManagmentWidget = nullptr;
     FrequencyComponentsWidget *freqWidget = nullptr;
 
     QFutureWatcher<void> watcher;
@@ -50,7 +54,6 @@ private:
     std::vector<AudioAnalyser::FrequencyData> spectrum;
     std::vector<float> reconstructedSamples;
 
-    inline static const std::string TEST_PATH = "eval/input_file.wav";
     inline static const std::string SPECTRUM_FILE_DIR = "eval/spectrums/spectrum_top_";
     inline static const std::string OUTPUT_FILE_DIR = "eval/output_file.wav";
     inline static const std::vector<int> THRESHOLDS = {10, 100, 1000, 2000, 5000, 10000};

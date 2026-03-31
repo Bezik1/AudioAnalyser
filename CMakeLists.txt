@@ -23,7 +23,12 @@ find_package(Qt6 COMPONENTS Core Widgets Charts REQUIRED)
 file(GLOB_RECURSE LIB_SOURCES "src/*.cpp")
 list(REMOVE_ITEM LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
-add_executable(main src/main.cpp ${LIB_SOURCES})
+add_executable(
+    main
+    # MACOSX_BUNDLE
+    src/main.cpp
+    ${LIB_SOURCES}
+)
 target_link_libraries(main PRIVATE Qt6::Widgets Qt6::Charts)
 
 enable_testing()

@@ -9,15 +9,17 @@
 #include "../../../core/AudioAnalyser/AudioAnalyser.hpp"
 #include "../../../utils/AudioUtils/AudioUtils.hpp"
 
-class MainWidget : public QWidget
+class OverviewWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MainWidget(QWidget *parent = nullptr);
+    explicit OverviewWidget(QWidget *parent = nullptr);
     void displayData(const AudioUtils::AudioData &audioData,
                      const std::vector<AudioAnalyser::FrequencyData> &spectrum,
                      const std::vector<float> &reconstructedSamples);
+
+    void showAnalyzingStatus();
 
 private:
     QVBoxLayout *layout = nullptr;
