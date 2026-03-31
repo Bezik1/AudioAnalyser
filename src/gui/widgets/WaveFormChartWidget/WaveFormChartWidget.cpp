@@ -26,14 +26,15 @@ WaveformChartWidget::WaveformChartWidget(const std::vector<float> &samples, int 
 
     auto *axisX = qobject_cast<QValueAxis *>(chart->axes(Qt::Horizontal).at(0));
     auto *axisY = qobject_cast<QValueAxis *>(chart->axes(Qt::Vertical).at(0));
-    if (axisX)
+    if (axisY)
     {
         axisX->setLabelsColor(Qt::white);
         axisX->setTitleText("Time (s)");
         axisX->setTitleBrush(QBrush(Qt::white));
         axisX->setRange(0, static_cast<double>(samples.size()) / sampleRate);
+        axisX->setTitleBrush(QBrush(Qt::white));
     }
-    if (axisY)
+    if (axisX)
     {
         axisY->setLabelsColor(Qt::white);
         axisY->setRange(-1.0, 1.0);

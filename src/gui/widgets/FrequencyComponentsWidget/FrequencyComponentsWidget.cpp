@@ -4,27 +4,47 @@ FrequencyComponentsWidget::FrequencyComponentsWidget(QWidget *parent) : QWidget(
 {
     mainLayout = new QVBoxLayout(this);
 
+    statusLabel = new QLabel("Please select an audio file first.", this);
+    statusLabel->setAlignment(Qt::AlignCenter);
+    statusLabel->setStyleSheet("color: #888;");
+    mainLayout->addWidget(statusLabel);
+
+    contentWidget = new QWidget(this);
+    auto *contentLayout = new QVBoxLayout(contentWidget);
+
     auto *controlsLayout = new QHBoxLayout();
-    controlsLayout->addWidget(new QLabel("Liczba składowych (X):", this));
+    controlsLayout->addWidget(new QLabel("Number of components:", this));
     countSpinner = new QSpinBox(this);
     countSpinner->setRange(1, 1000);
     countSpinner->setValue(20);
     controlsLayout->addWidget(countSpinner);
     controlsLayout->addStretch();
-    mainLayout->addLayout(controlsLayout);
+    contentLayout->addLayout(controlsLayout);
 
     connect(countSpinner, &QSpinBox::valueChanged, this, &FrequencyComponentsWidget::topXChanged);
 
     summaryChartView = new QChartView(this);
     summaryChartView->setMinimumHeight(300);
-    mainLayout->addWidget(summaryChartView);
+    contentLayout->addWidget(summaryChartView);
 
     scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollContainer = new QWidget();
     scrollLayout = new QVBoxLayout(scrollContainer);
     scrollArea->setWidget(scrollContainer);
-    mainLayout->addWidget(scrollArea);
+    contentLayout->addWidget(scrollArea);
+
+    mainLayout->addWidget(contentWidget);
+
+    contentWidget->setVisible(false);
+}
+
+void FrequencyComponentsWidget::showAnalyzingStatus()
+{
+    contentWidget->setVisible(false);
+    statusLabel->setVisible(true);
+    statusLabel->setText("Analyzing Audio Data...");
+    statusLabel->setStyleSheet("color: #888;");
 }
 
 void FrequencyComponentsWidget::setFrequencyData(const std::vector<AudioAnalyser::FrequencyData> &topFrequencies,
@@ -38,7 +58,15 @@ void FrequencyComponentsWidget::setFrequencyData(const std::vector<AudioAnalyser
     }
 
     if (topFrequencies.empty())
+    {
+        statusLabel->setText("No frequency data found.");
+        statusLabel->setVisible(true);
+        contentWidget->setVisible(false);
         return;
+    }
+
+    statusLabel->setVisible(false);
+    contentWidget->setVisible(true);
 
     std::vector<float> sumSamples(numSamples, 0.0f);
     float maxAmp = 0.0f;
@@ -54,7 +82,7 @@ void FrequencyComponentsWidget::setFrequencyData(const std::vector<AudioAnalyser
         for (int i = 0; i < numSamples; ++i)
             sumSamples[i] += samples[i];
 
-        QString title = QString("Freq:uency %1 Hz | Amplitude: %2").arg(freq.frequency).arg(freq.amplitude);
+        QString title = QString("Frequency %1 Hz | Amplitude: %2").arg(freq.frequency).arg(freq.amplitude);
         scrollLayout->addWidget(createIndividualChart(samples, title, freq.amplitude));
     }
 
