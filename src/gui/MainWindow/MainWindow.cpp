@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QtConcurrent/QtConcurrent>
 #include <algorithm>
+#include <complex>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -84,7 +85,8 @@ void MainWindow::setupLayout()
 
 void MainWindow::saveModifiedFrequency(const std::vector<AudioAnalyser::FrequencyData> &modifiedData)
 {
-    auto samples = AudioAnalyser::reconstruct(modifiedData, audioData.getNumSamples(), audioData.fmt.sampleRate);
+    int originalNumSamples = audioData.getNumSamples();
+    auto samples = AudioAnalyser::reconstructFFT(modifiedData, originalNumSamples, audioData.fmt.sampleRate);
 
     AudioUtils::AudioData outputData = AudioUtils::prepareSamplesToBeSaved(
         samples,
@@ -120,21 +122,41 @@ void MainWindow::startAsyncAnalysis(const QString &wavPath)
     QFuture<void> future = QtConcurrent::run([this, wavPathStr, evalPathStr, spectrumPathStr]()
                                              {
         this->audioData = AudioUtils::readWav(wavPathStr);
-        int numSamples = audioData.getNumSamples();
+        int originalNumSamples = audioData.getNumSamples();
 
-        this->spectrum = AudioAnalyser::discreteFourierTransform(audioData.data.samples, audioData.fmt.sampleRate);
+        this->spectrum = AudioAnalyser::fastFourierTransform(audioData.data.samples, audioData.fmt.sampleRate);
 
-        auto sortedSpectrum = this->spectrum;
-        std::sort(sortedSpectrum.begin(), sortedSpectrum.end(), [](const auto &a, const auto &b)
-                  { return a.amplitude > b.amplitude; });
+        struct IndexedFreq
+        {
+            int index;
+            float amp;
+        };
+        std::vector<IndexedFreq> indexed;
+        for (int i = 0; i < (int)this->spectrum.size(); ++i)
+        {
+            indexed.push_back({i, this->spectrum[i].amplitude});
+        }
+
+        std::sort(indexed.begin(), indexed.end(), [](const auto &a, const auto &b)
+                  { return a.amp > b.amp; });
 
         for (int threshold : THRESHOLDS)
         {
-            int count = std::min(threshold, static_cast<int>(sortedSpectrum.size()));
-            std::vector<AudioAnalyser::FrequencyData> topN(sortedSpectrum.begin(), sortedSpectrum.begin() + count);
-            
-            auto reconstructedThresholdSample = AudioAnalyser::reconstruct(
-                topN, numSamples, audioData.fmt.sampleRate);
+            auto thresholdSpectrum = this->spectrum;
+            int count = std::min(threshold, static_cast<int>(indexed.size()));
+
+            std::vector<bool> keep(this->spectrum.size(), false);
+            for (int i = 0; i < count; ++i)
+                keep[indexed[i].index] = true;
+
+            for (int i = 0; i < (int)thresholdSpectrum.size(); i++)
+            {
+                if (!keep[i])
+                    thresholdSpectrum[i].amplitude = 0.0f;
+            }
+
+            auto reconstructedThresholdSample = AudioAnalyser::reconstructFFT(
+                thresholdSpectrum, originalNumSamples, audioData.fmt.sampleRate);
 
             AudioUtils::AudioData thresholdData = AudioUtils::prepareSamplesToBeSaved(
                 reconstructedThresholdSample,
@@ -146,7 +168,7 @@ void MainWindow::startAsyncAnalysis(const QString &wavPath)
             AudioUtils::saveWav(thresholdData, savePath);
         }
 
-        this->reconstructedSamples = AudioAnalyser::reconstruct(this->spectrum, numSamples, audioData.fmt.sampleRate);
+        this->reconstructedSamples = AudioAnalyser::reconstructFFT(this->spectrum, originalNumSamples, audioData.fmt.sampleRate);
 
         AudioUtils::AudioData fullData = AudioUtils::prepareSamplesToBeSaved(
             this->reconstructedSamples,

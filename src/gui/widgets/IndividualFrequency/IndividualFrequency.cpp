@@ -107,7 +107,7 @@ QChartView *IndividualFrequency::createChart()
 void IndividualFrequency::updateChart()
 {
     std::vector<AudioAnalyser::FrequencyData> single = {data};
-    auto samples = AudioAnalyser::reconstruct(single, numSamples, sampleRate);
+    auto samples = AudioAnalyser::reconstructDFT(single, numSamples, sampleRate);
 
     QList<QPointF> points;
     int stepSize = std::max(1, (int)(samples.size() * 0.001));

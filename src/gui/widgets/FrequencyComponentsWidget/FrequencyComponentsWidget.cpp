@@ -160,7 +160,7 @@ void FrequencyComponentsWidget::updateSummaryChart()
     if (localFrequencies.empty())
         return;
 
-    auto sumSamples = AudioAnalyser::reconstruct(localFrequencies, currentNumSamples, currentSampleRate);
+    auto sumSamples = AudioAnalyser::reconstructDFT(localFrequencies, currentNumSamples, currentSampleRate);
 
     auto *chart = summaryChartView->chart();
     auto *series = qobject_cast<QLineSeries *>(chart->series().at(0));

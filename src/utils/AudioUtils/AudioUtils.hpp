@@ -100,8 +100,6 @@ public:
     /**
      * @brief Reads .wav file and returns AudioData struct containing data and it's specification.
      *
-     * @param filePath path to the file in the default `./data` directory.
-     *
      * @details This implementation sticks to RAII system. To do so it uses std::ifstream class, which
      * guarantee that file will close no further, than before last block of the sequence.
      *
@@ -115,16 +113,24 @@ public:
      * numSamples = 8 * subChunk2Size / (numChannels * bitsPerSample)
      * ```
      *
+     * @param filePath path to the file in the default `./data` directory.
+     *
      * @return AudioData
      */
     static AudioData readWav(std::string_view filePath);
 
     /**
-     * @brief
+     * @brief Prepares samples to be saved in a .wav file.
      *
-     * @param samples
-     * @param fmt
-     * @return AudioData
+     * @details It uses the informations about numChannels, sampleRate and bitsPersSample
+     * to calculate other properties of audio file and returns AudioData object.
+     *
+     * @param samples samples in the form of vector of floats.
+     * @param numChannels informs about number of dominating voices mono / stereo.
+     * @param sampleRate rate at which samples were measured in bits per second.
+     * @param bitsPerSample it is the value of bits per sample.
+     *
+     * @return AudioData Ready to save audio object.
      */
     static AudioData prepareSamplesToBeSaved(const std::vector<float> &samples,
                                           uint16_t numChannels,

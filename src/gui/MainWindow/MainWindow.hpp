@@ -62,5 +62,5 @@ private:
 
     inline static const std::string SPECTRUM_FILE_DIR = "/spectrum_top_";
     inline static const std::string OUTPUT_FILE_DIR = "/output_file.wav";
-    inline static const std::vector<int> THRESHOLDS = {10, 100, 1000, 2000, 5000, 10000};
+    inline static const std::vector<int> THRESHOLDS = {8, 128, 1024, 2028, 4056, 9112};
 };
