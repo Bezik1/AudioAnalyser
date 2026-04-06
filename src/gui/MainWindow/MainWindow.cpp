@@ -89,13 +89,9 @@ void MainWindow::saveModifiedFrequency(const std::vector<AudioAnalyser::Frequenc
     auto samples = AudioAnalyser::reconstructFFT(modifiedData, originalNumSamples, audioData.fmt.sampleRate);
 
     AudioUtils::AudioData outputData = AudioUtils::prepareSamplesToBeSaved(
-        samples,
-        audioData.fmt.numChannels,
-        audioData.fmt.sampleRate,
-        audioData.fmt.bitsPerSample);
+        samples, audioData.fmt.numChannels, audioData.fmt.sampleRate, audioData.fmt.bitsPerSample);
 
     QString savePath = QDir::currentPath() + "/data/eval/modified_output.wav";
-
     AudioUtils::saveWav(outputData, savePath.toStdString());
     fileStreamWidget->refreshFileList(savePath);
 }
@@ -126,37 +122,23 @@ void MainWindow::startAsyncAnalysis(const QString &wavPath)
 
         this->spectrum = AudioAnalyser::fastFourierTransform(audioData.data.samples, audioData.fmt.sampleRate);
 
-        struct IndexedFreq
-        {
-            int index;
-            float amp;
-        };
         std::vector<IndexedFreq> indexed;
         for (int i = 0; i < (int)this->spectrum.size(); ++i)
-        {
             indexed.push_back({i, this->spectrum[i].amplitude});
-        }
 
         std::sort(indexed.begin(), indexed.end(), [](const auto &a, const auto &b)
                   { return a.amp > b.amp; });
 
         for (int threshold : THRESHOLDS)
         {
-            auto thresholdSpectrum = this->spectrum;
+            std::vector<AudioAnalyser::FrequencyData> thresholdDataList;
             int count = std::min(threshold, static_cast<int>(indexed.size()));
 
-            std::vector<bool> keep(this->spectrum.size(), false);
             for (int i = 0; i < count; ++i)
-                keep[indexed[i].index] = true;
-
-            for (int i = 0; i < (int)thresholdSpectrum.size(); i++)
-            {
-                if (!keep[i])
-                    thresholdSpectrum[i].amplitude = 0.0f;
-            }
+                thresholdDataList.push_back(this->spectrum[indexed[i].index]);
 
             auto reconstructedThresholdSample = AudioAnalyser::reconstructFFT(
-                thresholdSpectrum, originalNumSamples, audioData.fmt.sampleRate);
+                thresholdDataList, originalNumSamples, audioData.fmt.sampleRate);
 
             AudioUtils::AudioData thresholdData = AudioUtils::prepareSamplesToBeSaved(
                 reconstructedThresholdSample,

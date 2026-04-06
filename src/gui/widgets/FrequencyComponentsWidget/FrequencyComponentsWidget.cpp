@@ -1,5 +1,4 @@
 #include "FrequencyComponentsWidget.hpp"
-
 #include "../../styles/GlobalStyles.cpp"
 
 FrequencyComponentsWidget::FrequencyComponentsWidget(QWidget *parent) : QWidget(parent)
@@ -23,7 +22,7 @@ FrequencyComponentsWidget::FrequencyComponentsWidget(QWidget *parent) : QWidget(
 
     controlsLayout->addWidget(new QLabel(COUNT_LABEL_TEXT, this));
     countSpinner = new QSpinBox(this);
-    countSpinner->setRange(1, 5000);
+    countSpinner->setRange(1, 10000);
     countSpinner->setValue(100);
     controlsLayout->addWidget(countSpinner);
 
@@ -97,9 +96,7 @@ void FrequencyComponentsWidget::updateVisibleWidgets()
 {
     int maxVisible = visibleCountSpinner->value();
     for (int i = 0; i < (int)freqWidgets.size(); i++)
-    {
         freqWidgets[i]->setVisible(i < maxVisible);
-    }
 }
 
 void FrequencyComponentsWidget::showAnalyzingStatus()
@@ -131,7 +128,6 @@ void FrequencyComponentsWidget::setFrequencyData(const std::vector<AudioAnalyser
     {
         int index = static_cast<int>(freqWidgets.size());
         auto *freqWidget = new IndividualFrequency(AudioAnalyser::FrequencyData{}, currentNumSamples, currentSampleRate);
-
         freqWidgets.push_back(freqWidget);
         scrollLayout->addWidget(freqWidget);
 
@@ -160,16 +156,17 @@ void FrequencyComponentsWidget::updateSummaryChart()
     if (localFrequencies.empty())
         return;
 
-    auto sumSamples = AudioAnalyser::reconstructDFT(localFrequencies, currentNumSamples, currentSampleRate);
+    auto sumSamples = AudioAnalyser::reconstructFFT(localFrequencies, currentNumSamples, currentSampleRate);
 
     auto *chart = summaryChartView->chart();
     auto *series = qobject_cast<QLineSeries *>(chart->series().at(0));
 
     QList<QPointF> points;
-    int stepSize = std::max(1, (int)(sumSamples.size() * 0.001));
+    int previewLimit = std::min((int)sumSamples.size(), 10000);
+    int stepSize = std::max(1, previewLimit / 1000);
 
-    float maxAmp = 0.1f;
-    for (int i = 0; i < (int)sumSamples.size(); i += stepSize)
+    float maxAmp = 0.01f;
+    for (int i = 0; i < previewLimit; i += stepSize)
     {
         float val = sumSamples[i];
         points.append(QPointF(i, val));
@@ -178,7 +175,6 @@ void FrequencyComponentsWidget::updateSummaryChart()
     }
 
     series->replace(points);
-
-    chart->axes(Qt::Horizontal).back()->setRange(0, static_cast<qreal>(sumSamples.size()));
+    chart->axes(Qt::Horizontal).back()->setRange(0, static_cast<qreal>(previewLimit));
     chart->axes(Qt::Vertical).back()->setRange(-maxAmp * 1.2, maxAmp * 1.2);
 }
