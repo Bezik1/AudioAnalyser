@@ -119,21 +119,25 @@ AudioAnalyser::reconstructFFT(const std::vector<FrequencyData> &spectrum, int nu
         n *= 2;
 
     std::vector<std::complex<float>> complexSpectrum(n, {0, 0});
+    float frequencyStep = static_cast<float>(sampleRate) / n;
 
-    for (int i = 0; i < (int)spectrum.size(); i++)
+    for (const auto &freq : spectrum)
     {
-        float normAmp = (i == 0 || i == n / 2) ? spectrum[i].amplitude : spectrum[i].amplitude / 2.0f;
+        int i = std::round(freq.frequency / frequencyStep);
+
+        if (i < 0 || i > n / 2)
+            continue;
+
+        float normAmp = (i == 0 || i == n / 2) ? freq.amplitude : freq.amplitude / 2.0f;
         normAmp *= n;
 
-        float real = normAmp * std::cos(spectrum[i].phase);
-        float imag = normAmp * std::sin(spectrum[i].phase);
+        float real = normAmp * std::cos(freq.phase);
+        float imag = normAmp * std::sin(freq.phase);
 
         complexSpectrum[i] = {real, imag};
 
         if (i > 0 && i < n / 2)
-        {
             complexSpectrum[n - i] = std::conj(complexSpectrum[i]);
-        }
     }
 
     std::vector<std::complex<float>> reconstructedComplex = fftRecursive(complexSpectrum, true);
