@@ -116,5 +116,5 @@ void IndividualFrequency::updateChart()
 
     series->replace(points);
     float amp = std::abs(data.amplitude);
-    chartView->chart()->axes(Qt::Vertical).back()->setRange(-amp * 1.1 - 0.01, amp * 1.1 + 0.01);
+    chartView->chart()->axes(Qt::Vertical).back()->setRange(-amp * 1.01 - 0.001, amp * 1.01 + 0.001);
 }

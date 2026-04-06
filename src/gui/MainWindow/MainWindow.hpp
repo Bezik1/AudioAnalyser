@@ -31,6 +31,12 @@ private slots:
     void saveModifiedFrequency(const std::vector<AudioAnalyser::FrequencyData> &modifiedData);
 
 private:
+    struct IndexedFreq
+    {
+        int index;
+        float amp;
+    };
+
     void setupLayout();
     void startAsyncAnalysis(const QString &wavPath);
 
