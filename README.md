@@ -15,8 +15,14 @@ cmake -S . -B build
 # Build and run project
 cmake --build build --target main && ./build/main
 
-# Builds and run tests
+# Build and run tests
 cmake --build build --target tests && ./build/tests
+
+# Build and run benchmarks
+cmake --build build --target benchmarks && ./build/benchmarks
+
+# Record your own .wav file (MacOS)
+ffmpeg -f avfoundation -thread_queue_size 1024 -i ":1" -ac 1 -ar 44100 -acodec pcm_s16le ./data/eval/input_file.wav
 
 # Build and run documentation
 doxygen && open docs/html/index.html
@@ -59,17 +65,20 @@ Application shows various charts representing input and generated
 data strength over time graph, as well as graph of strength of each 
 frequency, obtained via usage of DFT.
 
-#### File Managment
-<img src="assets/img/file_managment_view.png">
+#### File Managment Widget
+<img src="assets/img/widgets/file_managment_widget.png">
 
-#### Loading
-<img src="assets/img/loading_view.png">
+#### Loading Widget
+<img src="assets/img/widgets/loading_widget.png">
 
-#### Overview
-<img src="assets/img/overview_view.png">
+#### File Streaming Widget
+<img src="assets/img/widgets/file_streaming_widget.png">
 
-#### Frequency Components
-<img src="assets/img/frequency_components_view.png">
+#### Overview Widget
+<img src="assets/img/widgets/overview_widget.png">
+
+#### Frequency Components Widget
+<img src="assets/img/widgets/frequency_components_widget.png">
 
 ## 🛠 Technologies
 

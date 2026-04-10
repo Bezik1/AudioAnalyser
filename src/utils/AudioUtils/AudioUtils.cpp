@@ -77,7 +77,7 @@ AudioUtils::AudioData AudioUtils::readWav(std::string_view filePath)
                 {
                     int16_t sample;
                     file.read(reinterpret_cast<char *>(&sample), sizeof(int16_t));
-                    data.data.samples[i] = (sample / 32768.0f);
+                    data.data.samples[i] = (sample / 32768.0);
                 }
             }
             else if (data.fmt.bitsPerSample == 8)
@@ -86,7 +86,7 @@ AudioUtils::AudioData AudioUtils::readWav(std::string_view filePath)
                 {
                     uint8_t sample;
                     file.read(reinterpret_cast<char *>(&sample), sizeof(uint8_t));
-                    data.data.samples[i] = ((sample - 128.0f) / 128.0f);
+                    data.data.samples[i] = ((sample - 128.0) / 128.0);
                 }
             }
             else
@@ -102,7 +102,7 @@ AudioUtils::AudioData AudioUtils::readWav(std::string_view filePath)
 }
 
 AudioUtils::AudioData
-AudioUtils::prepareSamplesToBeSaved(const std::vector<float> &samples,
+AudioUtils::prepareSamplesToBeSaved(const std::vector<double> &samples,
                                     uint16_t numChannels,
                                     uint32_t sampleRate,
                                     uint16_t bitsPerSample)
@@ -158,8 +158,8 @@ void AudioUtils::saveWav(const AudioUtils::AudioData &audioData, std::string_vie
     {
         for (int i = 0; i < audioData.data.samples.size(); i++)
         {
-            float clamped = std::clamp(audioData.data.samples.at(i), -1.0f, 1.0f);
-            int16_t clampedSample = static_cast<int16_t>(clamped * 32767.0f);
+            double clamped = std::clamp(audioData.data.samples.at(i), -1.0, 1.0);
+            int16_t clampedSample = static_cast<int16_t>(clamped * 32767.0);
 
             file.write(reinterpret_cast<const char *>(&clampedSample), sizeof(int16_t));
             if (!file)
@@ -170,8 +170,8 @@ void AudioUtils::saveWav(const AudioUtils::AudioData &audioData, std::string_vie
     {
         for (int i = 0; i < audioData.data.samples.size(); i++)
         {
-            float clamped = std::clamp(audioData.data.samples.at(i), -1.0f, 1.0f);
-            uint8_t clampedSample = static_cast<uint8_t>((clamped + 1.0f) * 127.5f);
+            double clamped = std::clamp(audioData.data.samples.at(i), -1.0, 1.0);
+            uint8_t clampedSample = static_cast<uint8_t>((clamped + 1.0) * 127.5f);
 
             file.write(reinterpret_cast<const char *>(&clampedSample), sizeof(uint8_t));
             if (!file)

@@ -62,11 +62,11 @@ public:
     /**
      * @brief DataSubChunk contains the size of data and the actual sound data.
      *
-     * @param samples Vector of samples, of following normalized format: -1.0f <= sample <= 1.0f.
+     * @param samples Vector of samples, of following normalized format: -1.0 <= sample <= 1.0.
      */
     struct DataSubChunk : SubChunk
     {
-        std::vector<float> samples;
+        std::vector<double> samples;
     };
 
     /**
@@ -125,14 +125,14 @@ public:
      * @details It uses the informations about numChannels, sampleRate and bitsPersSample
      * to calculate other properties of audio file and returns AudioData object.
      *
-     * @param samples samples in the form of vector of floats.
+     * @param samples samples in the form of vector of doubles.
      * @param numChannels informs about number of dominating voices mono / stereo.
      * @param sampleRate rate at which samples were measured in bits per second.
      * @param bitsPerSample it is the value of bits per sample.
      *
      * @return AudioData Ready to save audio object.
      */
-    static AudioData prepareSamplesToBeSaved(const std::vector<float> &samples,
+    static AudioData prepareSamplesToBeSaved(const std::vector<double> &samples,
                                           uint16_t numChannels,
                                           uint32_t sampleRate,
                                           uint16_t bitsPerSample);

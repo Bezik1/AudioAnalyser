@@ -2,7 +2,7 @@
 
 #include "../../styles/GlobalStyles.cpp"
 
-WaveformChartWidget::WaveformChartWidget(const std::vector<float> &samples, int sampleRate, const QString &title, QWidget *parent)
+WaveformChartWidget::WaveformChartWidget(const std::vector<double> &samples, int sampleRate, const QString &title, QWidget *parent)
     : QWidget(parent)
 {
     chart = new QChart();

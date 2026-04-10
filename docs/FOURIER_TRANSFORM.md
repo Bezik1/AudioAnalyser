@@ -24,7 +24,7 @@ the calculations easier and it is logical from the mathematical point of view
 to represent sth as a complex number, when we touch the topic of rotation.
 
 #### Center of mass position on the winded graph
-<img style="width:400px;" src="../assets/img/center_mass.png">
+<img style="width:400px;" src="../assets/img/docs/center_mass.png">
 
 Complex number representation, allows us to use Euler's formula. This formula
 says that, if we take $ e^{i\phi} $, we would land on the point, if we were to
@@ -35,7 +35,7 @@ Winding process is then defined, as a product of wave function g(t) and $ e^{i\p
 which gives us $ g(t)e^{i\phi} $
 
 #### Sound wave function and extracted frequencies functions
-<img style="width:400px;" src="../assets/img/waves.png">
+<img style="width:400px;" src="../assets/img/docs/waves.png">
 
 ### Optimization
 
@@ -75,7 +75,7 @@ the complex number of center of mass of the winded graph of sound function we ca
 a multiplication of n-th coefficient of this polynomial and the n-th root of unity $ e^{\frac{2 \pi i}{n}}$.
 
 #### Roots of unity on complex plane
-<img style="width:400px;" src="../assets/img/root_unity.png">
+<img style="width:400px;" src="../assets/img/docs/root_unity.png">
 
 ### Overview
 
@@ -98,7 +98,7 @@ We use the following properties of odd and even polynomials:
 - Odd degree polynomial: $ P(-x) = -P(x) $
 
 #### Polynomial grouping
-<img style="width:400px;" src="../assets/img/polynomial_operations.png">
+<img style="width:400px;" src="../assets/img/docs/polynomial_operations.png">
 
 The strategy is to group odd and even terms of polynomial, creating $ P_e(x^2) $ and $ P_o(x^2) $ and odd term polynomials
 of $ x^2 $. It is worth to mention that obtained polynomials are of $ \frac{n}{2} - 1$  degreee. We repeat the process of 
@@ -132,36 +132,36 @@ To analyze the frequencies in a wave, we can conceptually wrap the wave function
 The center of mass is represented as a complex number, which simplifies calculations and naturally represents rotational behavior.
 
 #### Center of mass on the winded graph
-<img style="width:400px;" src="../assets/img/center_mass.png">
+<img style="width:400px;" src="../assets/img/docs/center_mass.png">
 
-Euler's formula allows us to model rotation with complex numbers: \( e^{i\phi} \) represents a point obtained by rotating counterclockwise by \(\phi\) radians from (1, 0) on a unit circle.
+Euler's formula allows us to model rotation with complex numbers: $ e^{i\phi} $ represents a point obtained by rotating counterclockwise by $\phi$ radians from (1, 0) on a unit circle.
 
-The winding operation is defined as multiplying the wave function \( g(t) \) by \( e^{i\phi} \), giving \( g(t)e^{i\phi} \).
+The winding operation is defined as multiplying the wave function $ g(t) $ by $ e^{i\phi} $, giving $ g(t)e^{i\phi} $.
 
 #### Sound wave and extracted frequency functions
-<img style="width:400px;" src="../assets/img/waves.png">
+<img style="width:400px;" src="../assets/img/docs/waves.png">
 
 ### Optimization
 
 Using the Nyquist-Shannon sampling theorem, we can choose the optimal number of frequencies to reconstruct a signal. The theorem states that a continuous signal can be perfectly reconstructed if it is sampled at least twice the highest frequency present:
 
-\[
+$
 f_s \geq 2 f_\text{max}
-\]
+$
 
 ### Formula
 
 The Fourier Transform is defined as:
 
-\[
+$
 \hat{g}(f) = \int_{t_1}^{t_2} g(t) e^{-2\pi i f t} \, dt
-\]
+$
 
 Where:
 
-- \( g(t) \) is the wave function.
-- \( e^{-2\pi i t} \) describes clockwise rotation on the circle.
-- \( e^{-2\pi i f t} \) corresponds to a specific frequency.
+- $ g(t) $ is the wave function.
+- $ e^{-2\pi i t} $ describes clockwise rotation on the circle.
+- $ e^{-2\pi i f t} $ corresponds to a specific frequency.
 
 ### Uncertainty Principle
 
@@ -171,30 +171,32 @@ The Heisenberg Uncertainty Principle applies to waves: a signal concentrated in 
 
 ### Quick Note
 
-Audio data can be represented as a polynomial of samples over time. Each term is multiplied by the \(n\)-th root of unity \( e^{\frac{2 \pi i}{n}} \) to compute the center of mass of the winded graph.
+Audio data can be represented as a polynomial of samples over time. Each term is multiplied by the $n$-th root of unity $ e^{\frac{2 \pi i}{n}} $ to compute the center of mass of the winded graph.
 
 #### Roots of unity on the complex plane
-<img style="width:400px;" src="../assets/img/root_unity.png">
+<img style="width:400px;" src="../assets/img/docs/root_unity.png">
 
 ### Overview
 
-The Discrete Fourier Transform (DFT) has \(O(n^2)\) time complexity, which is inefficient for large sample rates (e.g., 44,000–48,000 Hz). In 1965, **James W. Cooley** and **John W. Tukey** introduced the **Fast Fourier Transform (FFT)**, reducing complexity to \(O(n \log n)\).
+The Discrete Fourier Transform (DFT) has $(O(n^2)) $ time complexity, which is inefficient for large sample rates (e.g., 44,000–48,000 Hz). In 1965, **James W. Cooley** and **John W. Tukey** introduced the **Fast Fourier Transform (FFT)**, reducing complexity to $O(n \log n)$.
 
-FFT uses polynomial multiplication: direct multiplication in coefficient form takes \(O(n^2)\), but using value form representation (evaluating at \(n+1\) points) reduces it to \(O(n \log n)\).
+FFT uses polynomial multiplication: direct multiplication in coefficient form takes $O(n^2)$, but using value form representation (evaluating at $n+1$ points) reduces it to $O(n \log n)$.
 
 Converting between coefficient and value forms leverages a **Divide and Conquer** strategy, polynomial properties, and complex numbers.
 
 Properties of polynomials:
 
-- Even-degree: \( P(x) = P(-x) \)
-- Odd-degree: \( P(-x) = -P(x) \)
+- Even-degree: $ P(x) = P(-x) $
+- Odd-degree: $ P(-x) = -P(x) $
 
 #### Polynomial grouping
-<img style="width:400px;" src="../assets/img/polynomial_operations.png">
+<img style="width:400px;" src="../assets/img/docs/polynomial_operations.png">
 
-Odd and even terms are grouped into \( P_e(x^2) \) and \( P_o(x^2) \). These polynomials have degree \( \frac{n}{2} - 1 \). This recursive process continues until degree 0, allowing conversion between coefficient and value forms in \(O(\log n)\) time.
+Odd and even terms are grouped into $ P_e(x^2) $ and $ P_o(x^2) $. These polynomials have degree $ \frac{n}{2} - 1 $. This recursive process continues until degree 0, allowing conversion between coefficient and value forms in $O(\log n)$ time.
 
 Complex numbers are essential: without them, later iterations would have all positive coefficients, breaking the algorithm. Using complex roots of unity ensures proper cancellation and correct FFT computation.
+
+
 
 ## 🗒️ Sources
 

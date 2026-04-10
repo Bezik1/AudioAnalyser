@@ -69,8 +69,8 @@ void IndividualFrequency::setupUi()
 
     auto onValueChanged = [this]()
     {
-        data.amplitude = static_cast<float>(ampSpin->value());
-        data.phase = static_cast<float>(phaseSpin->value());
+        data.amplitude = static_cast<double>(ampSpin->value());
+        data.phase = static_cast<double>(phaseSpin->value());
         updateChart();
         emit frequencyUpdated();
     };
@@ -89,7 +89,7 @@ QChartView *IndividualFrequency::createChart()
     chart->setBackgroundBrush(GlobalStyles::BackgroundColor);
 
     auto *axisX = new QValueAxis();
-    axisX->setRange(0, numSamples);
+    axisX->setRange(0, numSamples * 0.05);
     axisX->hide();
     chart->addAxis(axisX, Qt::AlignBottom);
     series->attachAxis(axisX);
@@ -110,11 +110,11 @@ void IndividualFrequency::updateChart()
     auto samples = AudioAnalyser::reconstructDFT(single, numSamples, sampleRate);
 
     QList<QPointF> points;
-    int stepSize = std::max(1, (int)(samples.size() * 0.001));
-    for (int j = 0; j < (int)samples.size(); j += stepSize)
+    int stepSize = std::max(1, (int)(samples.size() * 0.00001));
+    for (int j = 0; j < (int)samples.size() * 0.05; j += stepSize)
         points.append(QPointF(j, samples[j]));
 
     series->replace(points);
-    float amp = std::abs(data.amplitude);
+    double amp = std::abs(data.amplitude);
     chartView->chart()->axes(Qt::Vertical).back()->setRange(-amp * 1.01 - 0.001, amp * 1.01 + 0.001);
 }
