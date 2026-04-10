@@ -162,13 +162,13 @@ void FrequencyComponentsWidget::updateSummaryChart()
     auto *series = qobject_cast<QLineSeries *>(chart->series().at(0));
 
     QList<QPointF> points;
-    int previewLimit = std::min((int)sumSamples.size(), 10000);
+    int previewLimit = sumSamples.size();
     int stepSize = std::max(1, previewLimit / 1000);
 
-    float maxAmp = 0.01f;
+    double maxAmp = 0.01f;
     for (int i = 0; i < previewLimit; i += stepSize)
     {
-        float val = sumSamples[i];
+        double val = sumSamples[i];
         points.append(QPointF(i, val));
         if (std::abs(val) > maxAmp)
             maxAmp = std::abs(val);

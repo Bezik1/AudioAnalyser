@@ -34,7 +34,7 @@ private:
     struct IndexedFreq
     {
         int index;
-        float amp;
+        double amp;
     };
 
     void setupLayout();
@@ -59,7 +59,7 @@ private:
 
     AudioUtils::AudioData audioData;
     std::vector<AudioAnalyser::FrequencyData> spectrum;
-    std::vector<float> reconstructedSamples;
+    std::vector<double> reconstructedSamples;
 
     inline static const QString FILE_MANAGING_BTN_TXT = "File Managment";
     inline static const QString OVERVIEW_BTN_TXT = "Overview";

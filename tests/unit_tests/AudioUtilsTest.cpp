@@ -13,7 +13,7 @@ protected:
     inline static const std::string TEST_OUTPUT_PATH = "data/test/output_test.wav";
     inline static const std::string INCORRECT_TEST_PATH = "/invalid_path/incorrect_test.wav";
 
-    static constexpr float FLOAT_PARSING_ERROR = 1.0f / 32767.0f;
+    static constexpr double FLOAT_PARSING_ERROR = 1.0 / 32767.0;
 
     AudioUtils audioUtils;
 };
@@ -22,7 +22,7 @@ protected:
  * @brief Test, whether program throws correct exception, if user
  * passed incorrect path to audioUtils.
  */
-TEST_F(AudioUtilsTest, InputFileNotFoundTest)
+TEST_F(AudioUtilsTest, INPUT_FILE_NOT_FOUND_TEST)
 {
     EXPECT_THROW({ audioUtils.readWav(INCORRECT_TEST_PATH); }, std::runtime_error);
 }
@@ -31,7 +31,7 @@ TEST_F(AudioUtilsTest, InputFileNotFoundTest)
  * @brief Tests, if all fields in RIFF header are correctly stored.
  *
  */
-TEST_F(AudioUtilsTest, WavChunkDescriptorTest)
+TEST_F(AudioUtilsTest, WAV_CHUNK_DESCRIPTOR_TEST)
 {
     auto data = audioUtils.readWav(TEST_INPUT_PATH);
 
@@ -53,7 +53,7 @@ TEST_F(AudioUtilsTest, WavChunkDescriptorTest)
  * @brief Tests the format of data stored inside AudioData in data sub chunk.
  *
  */
-TEST_F(AudioUtilsTest, WavDataFieldValidation)
+TEST_F(AudioUtilsTest, WAV_DATA_FIELD_VERIFICATION_TEST)
 {
     auto data = audioUtils.readWav(TEST_INPUT_PATH);
 
@@ -64,9 +64,9 @@ TEST_F(AudioUtilsTest, WavDataFieldValidation)
     EXPECT_EQ(data.data.samples.size(), expectedSize);
     EXPECT_EQ(data.getNumSamples(), expectedSize);
 
-    for (float sample : data.data.samples)
+    for (double sample : data.data.samples)
     {
-        ASSERT_TRUE(sample >= -1.0f && sample <= 1.0f);
+        ASSERT_TRUE(sample >= -1.0 && sample <= 1.0);
     }
 }
 
@@ -74,7 +74,7 @@ TEST_F(AudioUtilsTest, WavDataFieldValidation)
  * @brief Test, whether program throws correct exception, if user
  * passed incorrect path to audioUtils.
  */
-TEST_F(AudioUtilsTest, IncorrectOutputFileTest)
+TEST_F(AudioUtilsTest, INCORRECT_OUTPUT_FILE_TEST)
 {
     auto sampleData = audioUtils.readWav(TEST_INPUT_PATH);
     EXPECT_THROW({ audioUtils.saveWav(sampleData, INCORRECT_TEST_PATH); }, std::runtime_error);
@@ -85,7 +85,7 @@ TEST_F(AudioUtilsTest, IncorrectOutputFileTest)
  * the first file are the same.
  *
  */
-TEST_F(AudioUtilsTest, WavDataSavingTest)
+TEST_F(AudioUtilsTest, WAV_DATA_SAVE_TEST)
 {
     auto data = audioUtils.readWav(TEST_INPUT_PATH);
     audioUtils.saveWav(data, TEST_OUTPUT_PATH);

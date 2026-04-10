@@ -18,7 +18,7 @@ public:
     void displayData(
         const AudioUtils::AudioData &audioData,
         const std::vector<AudioAnalyser::FrequencyData> &spectrum,
-        const std::vector<float> &reconstructedSamples);
+        const std::vector<double> &reconstructedSamples);
 
     void showAnalyzingStatus();
 

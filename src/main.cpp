@@ -5,9 +5,13 @@
 
 int main(int argc, char *argv[])
 {
-    static constexpr int DISPLAY_WIDTH = 1200;
-    static constexpr int DISPLAY_HEIGHT = 1000;
+    constexpr int DISPLAY_WIDTH = 1200;
+    constexpr int DISPLAY_HEIGHT = 1000;
+    const QString APP_NAME = "Audio Analyser";
+
     QApplication app(argc, argv);
+
+    app.setApplicationName(APP_NAME);
 
     QPalette darkPalette;
     darkPalette.setColor(QPalette::Window, QColor(53, 53, 53));
@@ -25,9 +29,10 @@ int main(int argc, char *argv[])
 
     app.setPalette(darkPalette);
 
-    MainWindow mainView;
-    mainView.show();
-    mainView.resize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    MainWindow mainWindow;
+    mainWindow.setWindowTitle(APP_NAME);
+    mainWindow.show();
+    mainWindow.resize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
     return app.exec();
 }
