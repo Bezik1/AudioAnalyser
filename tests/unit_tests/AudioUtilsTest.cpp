@@ -65,9 +65,7 @@ TEST_F(AudioUtilsTest, WAV_DATA_FIELD_VERIFICATION_TEST)
     EXPECT_EQ(data.getNumSamples(), expectedSize);
 
     for (double sample : data.data.samples)
-    {
         ASSERT_TRUE(sample >= -1.0 && sample <= 1.0);
-    }
 }
 
 /**
@@ -110,7 +108,5 @@ TEST_F(AudioUtilsTest, WAV_DATA_SAVE_TEST)
     ASSERT_EQ(data.data.samples.size(), dataAfterSave.data.samples.size());
 
     for (int i = 0; i < data.data.samples.size(); ++i)
-    {
         EXPECT_NEAR(data.data.samples[i], dataAfterSave.data.samples[i], FLOAT_PARSING_ERROR);
-    }
 }

@@ -32,24 +32,26 @@ jobs:
 
     - name: Build tests
       run: |
-        cmake --build build --target tests --parallel $(sysctl -n hw.ncpu)
+        cmake --build build --target unit-tests --parallel $(sysctl -n hw.ncpu)
 
-    - name: Run tests
+    - name: Run unit-tests
       run: |
-        ./build/tests
+        ctest --test-dir build -R unit-tests -V
 
-    - name: Build benchmarks
+    - name: Build benchmark-tests
       run: |
-        cmake --build build --target benchmarks --parallel $(sysctl -n hw.ncpu)
+        cmake --build build --target benchmark-tests --parallel $(sysctl -n hw.ncpu)
 
-    - name: Run benchmarks and verify complexity
-      run: |        
-        OUTPUT=$(./build/benchmarks)
+    - name: Run benchmark-tests and verify complexity
+      run: |
+        OUTPUT=$(ctest --test-dir build -R benchmark-tests -V)
         echo "$OUTPUT"
-        
-        if echo "$OUTPUT" | grep "RMS" | awk '{ if ($2 > 20) exit 1 }'; then
-          echo "Complexity RMS check passed."
-        else
-          echo "Complexity RMS check failed (exceeded 20% threeshold)!"
-          exit 1
-        fi
+
+        echo "$OUTPUT" | awk '
+        /RMS/ {
+            if ($2 + 0 > 20) {
+                print "Complexity RMS check failed (exceeded 20% threshold):"
+                print $0
+                exit 1
+            }
+        }'

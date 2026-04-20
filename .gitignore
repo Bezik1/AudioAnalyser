@@ -4,7 +4,12 @@
 /docs/latex
 
 /data/eval/spectrums/
+/data/eval/modified_output.wav
+/data/eval/input_file.wav
 /data/eval/output_file.wav
+
+/Testing/
+/Testing/*
 
 /bin
 /build

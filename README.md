@@ -16,10 +16,12 @@ cmake -S . -B build
 cmake --build build --target main && ./build/main
 
 # Build and run tests
-cmake --build build --target tests && ./build/tests
+cmake --build build --target unit-tests
+ctest --test-dir build -R unit-tests -V
 
 # Build and run benchmarks
-cmake --build build --target benchmarks && ./build/benchmarks
+cmake --build build --target benchmark-tests
+ctest --test-dir build -R benchmark-tests -V
 
 # Record your own .wav file (MacOS)
 ffmpeg -f avfoundation -thread_queue_size 1024 -i ":1" -ac 1 -ar 44100 -acodec pcm_s16le ./data/eval/input_file.wav

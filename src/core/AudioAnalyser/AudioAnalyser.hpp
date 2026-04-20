@@ -5,9 +5,8 @@
 #include <complex>
 #include <algorithm>
 
-class AudioAnalyser
+namespace AudioAnalyser
 {
-public:
     /**
      * @brief Represents the data of a single frequency component in a signal.
      *
@@ -27,10 +26,8 @@ public:
         double frequency;
     };
 
-    AudioAnalyser();
-
     /**
-     * @brief Computes the frequency spectrum of a signal using the Fast Fourier Transform (DFT).
+     * @brief Computes the frequency spectrum of a signal using the Discrete Fourier Transform (DFT).
      *
      * @details
      * The Discrete Fourier Transform converts a sequence of N time-domain samples into N frequency-domain components.
@@ -53,7 +50,7 @@ public:
      *
      * @return std::vector<FrequencyData> A vector containing the frequency components, each with amplitude, phase, and frequency information.
      */
-    static std::vector<FrequencyData>
+    std::vector<FrequencyData>
     discreteFourierTransform(const std::vector<double> &samples, int sampleRate);
 
     /**
@@ -77,7 +74,7 @@ public:
      *
      * @return std::vector<double> A vector of double values representing the reconstructed audio samples in the time domain.
      */
-    static std::vector<double>
+    std::vector<double>
     reconstructDFT(const std::vector<FrequencyData> &spectrum, int numSamples, int sampleRate);
 
     /**
@@ -161,7 +158,7 @@ public:
      *
      * @return std::vector<std::complex<double>> The transformed polynomial in value or coefficient form depending on invert flag.
      */
-    static std::vector<std::complex<double>>
+    std::vector<std::complex<double>>
     fftRecursive(std::vector<std::complex<double>> &polynomial, bool invert);
 
     /**
@@ -181,7 +178,7 @@ public:
      *
      * @return std::vector<FrequencyData> Vector of frequency components with amplitude, phase, and frequency.
      */
-    static std::vector<FrequencyData>
+    std::vector<FrequencyData>
     fastFourierTransform(const std::vector<double> &samples, int sampleRate);
 
     /**
@@ -206,8 +203,6 @@ public:
      *
      * @return std::vector<double> Vector of reconstructed audio samples in the time domain.
      */
-    static std::vector<double>
+    std::vector<double>
     reconstructFFT(const std::vector<FrequencyData> &spectrum, int numSamples, int sampleRate);
-
-private:
 };

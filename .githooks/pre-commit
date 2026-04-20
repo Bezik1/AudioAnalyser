@@ -45,7 +45,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Building tests..."
-cmake --build build --target tests --parallel $(sysctl -n hw.ncpu)
+cmake --build build --target unit-tests --parallel $(sysctl -n hw.ncpu)
 
 if [ $? -ne 0 ]; then
     echo "Build failed."
@@ -53,7 +53,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Running tests..."
-./build/tests
+ctest --test-dir build -R unit-tests -V
 
 if [ $? -ne 0 ]; then
     echo "Tests failed."
@@ -61,10 +61,10 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Building benchmarks..."
-cmake --build build --target benchmarks --parallel $(sysctl -n hw.ncpu)
+cmake --build build --target benchmark-tests --parallel $(sysctl -n hw.ncpu)
 
 echo "Running benchmarks..."
-BENCH_OUT=$(./build/benchmarks)
+BENCH_OUT=$(ctest --test-dir build -R benchmark-tests -V)
 echo "$BENCH_OUT"
 
 echo "$BENCH_OUT" | awk '

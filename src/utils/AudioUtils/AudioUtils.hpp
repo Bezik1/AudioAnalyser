@@ -30,7 +30,7 @@ public:
     struct SubChunk
     {
         std::string chunkID;
-        int chunkSize;
+        uint32_t chunkSize;
     };
 
     /**
@@ -98,7 +98,7 @@ public:
     AudioUtils();
 
     /**
-     * @brief Reads .wav file and returns AudioData struct containing data and it's specification.
+     * @brief Reads .wav file and returns AudioData struct containing actual sound data and it's specification.
      *
      * @details This implementation sticks to RAII system. To do so it uses std::ifstream class, which
      * guarantee that file will close no further, than before last block of the sequence.

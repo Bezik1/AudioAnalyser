@@ -131,7 +131,5 @@ TEST_F(AudioAnalyserTest, RECONSTRUCT_DFT_TEST)
         AudioAnalyser::reconstructDFT(spectrum, samples.size(), sampleRate);
 
     for (int i = 0; i < reconstructedSamples.size(); i++)
-    {
         EXPECT_NEAR(reconstructedSamples[i], samples[i], RECONSTRUCTION_ERROR);
-    }
 }

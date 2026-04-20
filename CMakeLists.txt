@@ -39,12 +39,22 @@ enable_testing()
 file(GLOB_RECURSE TEST_SOURCES "tests/unit_tests/*.cpp")
 file(GLOB_RECURSE BENCH_SOURCES "tests/benchmarks/*.cpp")
 
-add_executable(tests tests/unit_tests/main.cpp ${UTILS_SOURCES} ${CORE_SOURCES} ${TEST_SOURCES})
-target_link_libraries(tests PRIVATE 
+add_executable(unit-tests tests/unit_tests/main.cpp ${UTILS_SOURCES} ${CORE_SOURCES} ${TEST_SOURCES})
+target_link_libraries(unit-tests  PRIVATE 
     GTest::gtest_main 
 )
 
-add_executable(benchmarks tests/benchmarks/main.cpp ${CORE_SOURCES} ${BENCH_SOURCES})
-target_link_libraries(benchmarks PRIVATE 
+add_executable(benchmark-tests tests/benchmarks/main.cpp ${CORE_SOURCES} ${BENCH_SOURCES})
+target_link_libraries(benchmark-tests PRIVATE 
     benchmark::benchmark
+)
+
+add_test(NAME unit-tests COMMAND unit-tests)
+set_tests_properties(unit-tests PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
+add_test(NAME benchmark-tests COMMAND benchmark-tests)
+set_tests_properties(benchmark-tests PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )

@@ -19,7 +19,7 @@ AudioUtils::AudioData AudioUtils::readWav(std::string_view filePath)
         throw std::runtime_error("Couldn't read the chunk identifier.");
     data.chunkID = chunkID;
 
-    int chunkSize;
+    uint32_t chunkSize;
     file.read(reinterpret_cast<char *>(&chunkSize), CHUNK_SIZE_SIZE);
 
     if (file.gcount() != CHUNK_SIZE_SIZE)
@@ -44,7 +44,7 @@ AudioUtils::AudioData AudioUtils::readWav(std::string_view filePath)
         if (file.gcount() < CHUNK_ID_SIZE)
             throw std::runtime_error("Couldn't read subchunk identifier.");
 
-        int subchunkSize;
+        uint32_t subchunkSize;
         file.read(reinterpret_cast<char *>(&subchunkSize), CHUNK_SIZE_SIZE);
 
         if (subchunkID == SUB_CHUNK_1_ID)
@@ -93,9 +93,7 @@ AudioUtils::AudioData AudioUtils::readWav(std::string_view filePath)
                 throw std::runtime_error("Unsupported bits per sample value.");
         }
         else
-        {
             file.seekg(subchunkSize, std::ios::cur);
-        }
     }
 
     return data;
@@ -179,7 +177,5 @@ void AudioUtils::saveWav(const AudioUtils::AudioData &audioData, std::string_vie
         }
     }
     else
-    {
         throw std::runtime_error("Unsupported bits per sample format.");
-    }
 }

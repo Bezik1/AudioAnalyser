@@ -2,8 +2,6 @@
 #include <cmath>
 #include <algorithm>
 
-AudioAnalyser::AudioAnalyser() {}
-
 std::vector<AudioAnalyser::FrequencyData>
 AudioAnalyser::discreteFourierTransform(const std::vector<double> &samples, int sampleRate)
 {
